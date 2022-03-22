@@ -34,6 +34,8 @@ const Login = (props) => {
       } catch (error) {
         console.error(error);
       }
+    }else{
+      
     }
   };
 
@@ -71,7 +73,7 @@ const Login = (props) => {
       </div>
       <div className="mt-4">
         <button
-          className="btn btn-outline-primary w-100 fw-normal"
+          className="btn btn-outline-dark w-100 fw-normal"
           type="button"
           onClick={onClick}
         >

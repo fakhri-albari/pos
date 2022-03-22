@@ -9,7 +9,7 @@ import {
 } from "../features/order";
 import { addSelected, minSelected } from "../features/item";
 import { addItem, minItem } from "../features/order";
-import formatter from "../utils";
+import {formatter} from "../utilities";
 
 const ItemCard = (props) => {
   const { stock, price, name, selected } = props.data.data;

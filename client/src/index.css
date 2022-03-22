@@ -67,6 +67,12 @@ body {
   overflow-y: auto;
 }
 
+.item-body,
+.history-body {
+  height: 85%;
+  overflow-y: auto;
+}
+
 .order-footer {
   height: 15%;
   border-radius: 0px 0px 24px 24px;
@@ -112,4 +118,8 @@ body {
 
 .modal-content {
   border-radius: 12px;
+}
+
+.select-menu {
+  width: 200px;
 }
