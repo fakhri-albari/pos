@@ -8,44 +8,50 @@ import {
   minTotalPrice,
 } from "../features/order";
 import { addSelected, minSelected } from "../features/item";
+import { addItem, minItem } from "../features/order";
+import formatter from "../utils";
 
-const ItemCard = ({ itemId, itemStock, itemPrice, itemName, itemSelected }) => {
+const ItemCard = (props) => {
+  const { stock, price, name, selected } = props.data.data;
+  const itemId = props.data.id;
   const [addDisabled, setAddDisabled] = useState("");
   const [minDisabled, setMinDisabled] = useState("disabled");
   const [grayscale, setGrayscale] = useState("");
   const dispatch = useDispatch();
 
   const addNumber = () => {
-    if (itemSelected < itemStock) {
+    if (selected < stock) {
       dispatch(addTotalQuantity());
-      dispatch(addTotalPrice({ price: itemPrice }));
+      dispatch(addTotalPrice({ price: price }));
       dispatch(addSelected({ id: itemId }));
+      dispatch(addItem({ id: itemId, data: props.data }));
       setMinDisabled((state) => "");
     }
   };
 
   const minNumber = () => {
-    if (itemSelected > 0) {
+    if (selected > 0) {
       dispatch(minTotalQuantity());
-      dispatch(minTotalPrice({ price: itemPrice }));
+      dispatch(minTotalPrice({ price: price }));
       dispatch(minSelected({ id: itemId }));
+      dispatch(minItem({ id: itemId, data: props.data }));
     }
   };
 
   useEffect(() => {
-    if (itemStock <= 0) {
+    if (stock <= 0) {
       setAddDisabled((state) => "disabled");
     }
-    if (itemStock <= itemSelected) {
+    if (stock <= selected) {
       setGrayscale((state) => "grayscale(100%)");
       setAddDisabled((state) => "disabled");
       setGrayscale((state) => "grayscale(100%)");
     }
-    if (itemSelected < itemStock) {
+    if (selected < stock) {
       setAddDisabled((state) => "");
       setGrayscale((state) => "");
     }
-    if (itemSelected === 0) {
+    if (selected === 0) {
       setMinDisabled((state) => "disabled");
     }
   });
@@ -60,11 +66,11 @@ const ItemCard = ({ itemId, itemStock, itemPrice, itemName, itemSelected }) => {
           style={{ filter: grayscale }}
         />
         <div className="card-body">
-          <h5 className="card-title fw-bold">{itemName}</h5>
-          <p className="card-text">Rp {itemPrice}</p>
+          <h5 className="card-title fw-bold">{name}</h5>
+          <p className="card-text">{formatter.format(price)}</p>
           <Counter
-            limit={itemStock}
-            number={itemSelected}
+            limit={stock}
+            number={selected}
             minNumber={minNumber}
             addNumber={addNumber}
             addDisabled={addDisabled}
