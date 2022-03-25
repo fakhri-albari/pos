@@ -6,4 +6,14 @@ const createJwt = (payload, expire = 360000) => {
   return jwt.sign(payload, secret, { expiresIn: expire });
 };
 
-export { createJwt };
+const checkJwt = (token) => {
+  const result = jwt.verify(token, secret, (error) => {
+    return error ? error.message : false;
+  });
+};
+
+const decodeJwt = (token) => {
+  return jwt.decode(token);
+};
+
+export { createJwt, checkJwt, decodeJwt };

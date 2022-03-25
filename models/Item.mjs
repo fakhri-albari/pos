@@ -18,7 +18,7 @@ const itemSchema = new Schema({
   },
   img: {
     type: String,
-    default: "img_default.png",
+    default: "food.png",
   },
 });
 

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { currentDate } from "../utilities";
 
 const initialState = {
-  menu: "history",
+  menu: "order",
   filter: {
     availableStock: false,
     dateHistory: currentDate(),

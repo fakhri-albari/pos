@@ -9,10 +9,10 @@ import {
 } from "../features/order";
 import { addSelected, minSelected } from "../features/item";
 import { addItem, minItem } from "../features/order";
-import {formatter} from "../utilities";
+import { formatter } from "../utilities";
 
 const ItemCard = (props) => {
-  const { stock, price, name, selected } = props.data.data;
+  const { stock, price, name, selected, img } = props.data.data;
   const itemId = props.data.id;
   const [addDisabled, setAddDisabled] = useState("");
   const [minDisabled, setMinDisabled] = useState("disabled");
@@ -60,7 +60,7 @@ const ItemCard = (props) => {
     <div className="col-3">
       <div className="card order-card">
         <img
-          src="./food.png"
+          src={img}
           className="item-img w-100"
           alt="item"
           style={{ filter: grayscale }}

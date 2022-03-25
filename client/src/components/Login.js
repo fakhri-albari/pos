@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Login = (props) => {
   const [data, setData] = useState({
     email: "",
     password: "",
   });
+
+  const navigate = useNavigate();
 
   // const alert = (
   //   <>
@@ -28,14 +31,16 @@ const Login = (props) => {
 
         if (!token) {
           alert(result.data.msg);
+        } else {
+          localStorage.setItem("token", token);
+          navigate("../homepage", { replace: true });
         }
-
-        localStorage.setItem("token", token);
       } catch (error) {
-        console.error(error);
+        const err = error.response;
+        alert(err.data.errors[0].msg);
       }
-    }else{
-      
+    } else {
+      alert("Email and Password must be filled");
     }
   };
 

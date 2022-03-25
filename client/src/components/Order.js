@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import ItemCard from "./ItemCard";
-import { resetItem } from "../features/item";
+import { resetItem, setItem } from "../features/item";
 import { resetOrder } from "../features/order";
 import {
   changeMenu,
@@ -9,8 +9,76 @@ import {
 } from "../features/setting";
 import { useDispatch } from "react-redux";
 import { formatter } from "../utilities";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const PaymentModal = () => {
+  const [money, setMoney] = useState(0);
+  const [change, setChange] = useState(0);
+  const [disable, setDisable] = useState(true);
+  const userName = useSelector((state) => state.user.name);
+  const totalPrice = useSelector((state) => state.order.totalPrice);
+  const totalQuantity = useSelector((state) => state.order.totalQuantity);
+  const itemAdded = useSelector((state) => state.order.itemAdded);
+
+  const onMoneyInput = (e) => {
+    setMoney(e.target.value);
+    if (totalPrice <= e.target.value) {
+      setChange(e.target.value - totalPrice);
+      console.log("change");
+    } else {
+      setChange(0);
+      console.log("0");
+    }
+  };
+
+  const createPayment = async () => {
+    const DATE = new Date();
+    const items = [];
+    const keys = Object.keys(itemAdded);
+    keys.map((key) => {
+      const { name, price, selected } = itemAdded[key];
+      items.push({
+        item_id: key,
+        quantity: selected,
+        price: price,
+        total: price * selected,
+      });
+    });
+
+    console.log(items);
+    const date =
+      DATE.getFullYear() + "-" + DATE.getMonth() + "-" + DATE.getDate();
+    const payload = {
+      order: {
+        date: date,
+        totalPrice: totalPrice,
+        totalQuantity: totalQuantity,
+        user: "623787e9084fde7e6da1a666",
+      },
+      orderDetail: items,
+    };
+    console.log(payload);
+    // await axios.post("http://localhost:5000/order", payload, {
+    //   headers: {
+    //     "content-type": "text/json",
+    //   },
+    // });
+  };
+
+  useEffect(() => {
+    setMoney(0);
+    setChange(0);
+  }, [totalPrice]);
+
+  useEffect(() => {
+    if (money >= totalPrice) {
+      setDisable(false);
+    } else {
+      setDisable(true);
+    }
+  }, [money, totalPrice]);
+
   return (
     <>
       <button
@@ -47,11 +115,11 @@ const PaymentModal = () => {
               <div className="d-flex flex-row">
                 <div className="d-flex flex-column w-50">
                   <small>Total</small>
-                  <h3>Rp 10.000</h3>
+                  <h3>{formatter.format(totalPrice)}</h3>
                 </div>
                 <div className="d-flex flex-column w-50 text-end">
                   <small>Cashier</small>
-                  <h3>Udin</h3>
+                  <h3>{userName}</h3>
                 </div>
               </div>
               <br />
@@ -62,7 +130,12 @@ const PaymentModal = () => {
                     <span className="input-group-text bg-white border-dark">
                       Rp
                     </span>
-                    <input type="text" className="form-control border-dark" />
+                    <input
+                      type="text"
+                      className="form-control border-dark"
+                      value={money}
+                      onChange={onMoneyInput}
+                    />
                   </div>
                 </div>
                 <div className="d-flex flex-column w-50 ms-2">
@@ -75,7 +148,8 @@ const PaymentModal = () => {
                       <input
                         type="text"
                         className="form-control border-0 bg-white"
-                        defaultValue={"0,00"}
+                        value={change}
+                        readOnly={true}
                       />
                     </div>
                   </fieldset>
@@ -105,6 +179,8 @@ const PaymentModal = () => {
                 type="button"
                 className="btn btn-outline-dark w-25"
                 data-bs-dismiss="modal"
+                onClick={createPayment}
+                disabled={disable}
               >
                 Pay
               </button>
@@ -365,6 +441,30 @@ const Order = (props) => {
   const items = useSelector((state) => state.item);
   const menu = useSelector((state) => state.setting.menu);
   const dispatch = useDispatch();
+
+  useEffect(async () => {
+    if (menu == "order") {
+      try {
+        const result = await axios.get("http://localhost:5000/item");
+        if (result) {
+          const items = {};
+          result.data.map(({ _id, name, price, stock, img }) => {
+            items[_id] = {
+              name,
+              price,
+              stock,
+              img,
+              selected: 0,
+            };
+          });
+          dispatch(setItem(items));
+        }
+      } catch (error) {
+        console.log(error);
+        alert("Something Error");
+      }
+    }
+  }, [menu]);
 
   const renderBody = () => {
     switch (menu) {
